@@ -1,6 +1,43 @@
 Change Log
 =================================
 
+## Version 0.9.1 (2020/01/09)
+* Fixed issue where `SubredditRef.search` would throw a type error.
+
+## Version 0.9.0 (2019/11/22)
+
+### Breaking changes:
+* HTTP methods exposed through `Reddit` now only accept `Map<String, String>` for
+  body arguments.
+
+### Other changes:
+* Added support for uploading images for subreddit theming in `SubredditStyleSheet`.
+
+## Version 0.8.0 (2019/10/01)
+* Added support for Dart for Web and Flutter Web.
+
+## Version 0.7.1 (2019/08/26)
+* Added 'best' sorting option to `FrontPage`.
+* Added `Reddit.restoreInstalledAuthenticatedInstance` which allows for
+  restoring an OAuth context created for an installed application instance that
+  does not require a client secret.
+
+## Version 0.7.0 (2019/07/29)
+
+### Breaking changes:
+* DRAW now requires a Dart SDK with version 2.2.2 or newer.
+
+### Other changes:
+* Added `isContinueThisThread` and `isLoadMoreComments` properties to
+  `MoreComments` to make it easier to differentiate between different types of
+  `MoreComment` responses from the Reddit API.
+* Added `Subreddits` class which contains streams for subreddits and subreddit
+  search functionality.
+* Added `over18` getter to `Subreddit`.
+* Added `after` parameter to stream generators.
+* Add `limit` parameters to stream generators to change number of elements
+  returned per request.
+
 ## Version 0.6.0 (2019/07/08)
 
 ### Breaking changes:

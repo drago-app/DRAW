@@ -4,6 +4,7 @@
 // can be found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:draw/src/auth.dart';
 import 'package:draw/src/draw_config_context.dart';
@@ -14,6 +15,7 @@ import 'package:draw/src/models/inbox.dart';
 import 'package:draw/src/models/redditor.dart';
 import 'package:draw/src/models/submission.dart';
 import 'package:draw/src/models/subreddit.dart';
+import 'package:draw/src/models/subreddits.dart';
 import 'package:draw/src/objector.dart';
 import 'package:draw/src/user.dart';
 import 'package:oauth2/oauth2.dart' as oauth2;
@@ -56,6 +58,9 @@ class Reddit {
 
   Inbox get inbox => _inbox;
 
+  /// Provides methods to interact with sets of subreddits.
+  Subreddits get subreddits => _subreddits;
+
   /// Provides methods for the currently authenticated user.
   User get user => _user;
 
@@ -69,6 +74,7 @@ class Reddit {
   DRAWConfigContext _config;
   FrontPage _front;
   Inbox _inbox;
+  Subreddits _subreddits;
   User _user;
   bool _readOnly = true;
   bool _initialized = false;
@@ -283,24 +289,14 @@ class Reddit {
       Reddit._webFlowInstance(clientId, clientSecret, userAgent, redirectUri,
           tokenEndpoint, authEndpoint, configUri, siteName);
 
-  /// Creates a new authenticated [Reddit] instance from cached credentials.
-  ///
-  /// [credentialsJson] is a json string containing the cached credentials. This
-  /// parameter is required and cannot be 'null'.
-  ///
-  /// This string can be retrieved from an authenticated [Reddit] instance in
-  /// the following manner:
-  ///
-  /// ```dart
-  /// final credentialsJson = reddit.auth.credentials.toJson();
-  /// ```
+  /// Creates a new [Reddit] instance for use with the web authentication flow.
+  /// This instance is not authenticated until a valid response code is
+  /// provided to `WebAuthenticator.authorize` (see test/auth/web_auth.dart
+  /// for an example usage).
   ///
   /// [clientId] is the identifier associated with your authorized application
   /// on Reddit. To get a client ID, create an authorized application
   /// [here](http://www.reddit.com/prefs/apps).
-  ///
-  /// [clientSecret] is the unique secret associated with your client ID. This
-  /// is required for script and web applications.
   ///
   /// [userAgent] is an arbitrary identifier used by the Reddit API to
   /// differentiate between client instances. This should be relatively unique.
@@ -333,6 +329,62 @@ class Reddit {
     return Reddit._webFlowInstanceRestore(
         clientId,
         clientSecret,
+        userAgent,
+        credentialsJson,
+        redirectUri,
+        tokenEndpoint,
+        authEndpoint,
+        configUri,
+        siteName);
+  }
+
+  /// Creates a new installed [Reddit] instance from cached credentials.
+  ///
+  /// [credentialsJson] is a json string containing the cached credentials. This
+  /// parameter is required and cannot be 'null'.
+  ///
+  /// This string can be retrieved from an installed [Reddit] instance in
+  /// the following manner:
+  ///
+  /// ```dart
+  /// final credentialsJson = reddit.auth.credentials.toJson();
+  /// ```
+  ///
+  /// [clientId] is the identifier associated with your installed application
+  /// on Reddit. To get a client ID, create an installed application
+  /// [here](http://www.reddit.com/prefs/apps).
+  ///
+  /// [userAgent] is an arbitrary identifier used by the Reddit API to
+  /// differentiate between client instances. This should be relatively unique.
+  ///
+  /// [redirectUri] is the redirect URI associated with your Reddit application.
+  ///
+  /// [tokenEndpoint] is a [Uri] to an alternative token endpoint. If not
+  /// provided, [defaultTokenEndpoint] is used.
+  ///
+  /// [authEndpoint] is a [Uri] to an alternative authentication endpoint. If not
+  /// provided, [defaultAuthTokenEndpoint] is used.
+  ///
+  /// [configUri] is a [Uri] pointing to a 'draw.ini' file, which can be used to
+  /// populate the previously described parameters.
+  ///
+  /// [siteName] is the name of the configuration to use from draw.ini. Defaults
+  /// to 'default'.
+  static Reddit restoreInstalledAuthenticatedInstance(String credentialsJson,
+      {String clientId,
+      String clientSecret,
+      String userAgent,
+      Uri redirectUri,
+      Uri tokenEndpoint,
+      Uri authEndpoint,
+      Uri configUri,
+      String siteName = 'default'}) {
+    if (credentialsJson == null) {
+      throw DRAWArgumentError('credentialsJson cannot be null.');
+    }
+    return Reddit._webFlowInstanceRestore(
+        clientId,
+        '',
         userAgent,
         credentialsJson,
         redirectUri,
@@ -583,21 +635,23 @@ class Reddit {
   }
 
   Future<dynamic> post(String api, Map<String, String> body,
-      {bool discardResponse = false, bool objectify = true}) async {
+      {Map<String, Uint8List> files,
+      Map params,
+      bool discardResponse = false,
+      bool objectify = true}) async {
     if (!_initialized) {
       throw DRAWAuthenticationError(
           'Cannot make requests using unauthenticated client.');
     }
     final path = Uri.https(defaultOAuthApiEndpoint, api);
-    final response = await auth.post(path, body);
+    final response = await auth.post(path, body, files: files, params: params);
     if (discardResponse) {
       return null;
     }
     return objectify ? _objector.objectify(response) : response;
   }
 
-  Future<dynamic> put(String api,
-      {/* Map<String, String>, String */ body}) async {
+  Future<dynamic> put(String api, {Map<String, String> body}) async {
     if (!_initialized) {
       throw DRAWAuthenticationError(
           'Cannot make requests using unauthenticated client.');
@@ -607,8 +661,7 @@ class Reddit {
     return _objector.objectify(response);
   }
 
-  Future<dynamic> delete(String api,
-      {/* Map<String, String>, String */ body}) async {
+  Future<dynamic> delete(String api, {Map<String, String> body}) async {
     if (!_initialized) {
       throw DRAWAuthenticationError(
           'Cannot make requests using unauthenticated client.');
@@ -623,6 +676,7 @@ class Reddit {
     _front = FrontPage(this);
     _inbox = Inbox(this);
     _objector = Objector(this);
+    _subreddits = Subreddits(this);
     _user = User(this);
     _initialized = true;
     _initializedCompleter.complete(true);

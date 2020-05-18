@@ -3,12 +3,11 @@
 /// Use of this source code is governed by a BSD-style license that
 /// can be found in the LICENSE file.
 
-import 'dart:io';
-
 import 'package:ini/ini.dart';
 
 import 'config_file_reader.dart';
 import 'exceptions.dart';
+import 'platform_utils.dart';
 
 const String kAccessToken = 'access_token';
 const String kAuthorize = 'authorize_uri';
@@ -23,7 +22,7 @@ const String kDefaultOAuthUrl = r'oauth.reddit.com';
 const String kDefaultRedditUrl = 'https://www.reddit.com';
 const String kDefaultRevokeToken =
     r'https://www.reddit.com/api/v1/revoke_token';
-const String kDefaultShortUrl = 'https://redd.it';
+const String kDefaultShortUrl = 'https://redd.it/';
 const String kHttpProxy = 'http_proxy';
 const String kHttpsProxy = 'https_proxy';
 const String kKind = 'kind';

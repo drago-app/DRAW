@@ -33,43 +33,73 @@ mixin RedditorListingMixin {
 
   /// Returns a [Stream] of content that the user has downvoted.
   ///
+  /// `limit` is the maximum number of objects returned by Reddit per request
+  /// (the default is 100). If provided, `after` specifies from which point
+  /// Reddit will return objects of the requested type. `params` is a set of
+  /// additional parameters that will be forwarded along with the request.
+  ///
   /// May raise an exception on access if the current user is not authorized to
   /// access this list.
-  Stream<UserContent> downvoted({Map<String, String> params}) =>
+  Stream<UserContent> downvoted(
+          {int limit, String after, Map<String, String> params}) =>
       ListingGenerator.createBasicGenerator(reddit, path + 'downvoted',
-          params: params);
+          limit: limit, after: after, params: params);
 
   /// Returns a [Stream] of content that the user has gilded.
   ///
+  /// `limit` is the maximum number of objects returned by Reddit per request
+  /// (the default is 100). If provided, `after` specifies from which point
+  /// Reddit will return objects of the requested type. `params` is a set of
+  /// additional parameters that will be forwarded along with the request.
+  ///
   /// May raise an exception on access if the current user is not authorized to
   /// access this list.
-  Stream<UserContent> gildings({Map<String, String> params}) =>
+  Stream<UserContent> gildings(
+          {int limit, String after, Map<String, String> params}) =>
       ListingGenerator.createBasicGenerator(reddit, path + 'gilded/given',
-          params: params);
+          limit: limit, after: after, params: params);
 
   /// Returns a [Stream] of content that the user has hidden.
   ///
+  /// `limit` is the maximum number of objects returned by Reddit per request
+  /// (the default is 100). If provided, `after` specifies from which point
+  /// Reddit will return objects of the requested type. `params` is a set of
+  /// additional parameters that will be forwarded along with the request.
+  ///
   /// May raise an exception on access if the current user is not authorized to
   /// access this list.
-  Stream<UserContent> hidden({Map<String, String> params}) =>
+  Stream<UserContent> hidden(
+          {int limit, String after, Map<String, String> params}) =>
       ListingGenerator.createBasicGenerator(reddit, path + 'hidden',
-          params: params);
+          limit: limit, after: after, params: params);
 
   /// Returns a [Stream] of content that the user has saved.
   ///
-  /// May raise an exception on access if the current user is not authorized to
-  /// access this list.
-  Stream<UserContent> saved({Map<String, String> params}) =>
-      ListingGenerator.createBasicGenerator(reddit, path + 'saved',
-          params: params);
-
-  /// Returns a [Stream] of content that the user has upvoted.
+  /// `limit` is the maximum number of objects returned by Reddit per request
+  /// (the default is 100). If provided, `after` specifies from which point
+  /// Reddit will return objects of the requested type. `params` is a set of
+  /// additional parameters that will be forwarded along with the request.
   ///
   /// May raise an exception on access if the current user is not authorized to
   /// access this list.
-  Stream<UserContent> upvoted({Map<String, String> params}) =>
+  Stream<UserContent> saved(
+          {int limit, String after, Map<String, String> params}) =>
+      ListingGenerator.createBasicGenerator(reddit, path + 'saved',
+          limit: limit, after: after, params: params);
+
+  /// Returns a [Stream] of content that the user has upvoted.
+  ///
+  /// `limit` is the maximum number of objects returned by Reddit per request
+  /// (the default is 100). If provided, `after` specifies from which point
+  /// Reddit will return objects of the requested type. `params` is a set of
+  /// additional parameters that will be forwarded along with the request.
+  ///
+  /// May raise an exception on access if the current user is not authorized to
+  /// access this list.
+  Stream<UserContent> upvoted(
+          {int limit, String after, Map<String, String> params}) =>
       ListingGenerator.createBasicGenerator(reddit, path + 'upvoted',
-          params: params);
+          limit: limit, after: after, params: params);
 }
 
 class SubListing extends Object with BaseListingMixin {

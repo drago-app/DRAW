@@ -54,16 +54,31 @@ void setRepliesInternal(commentLike, CommentForest comments) {
 class MoreComments extends RedditBase with RedditBaseInitializedMixin {
   static final RegExp _submissionRegExp = RegExp(r'{id}');
   List _comments;
-  List<String> _children;
-  int _count;
-  String _parentId;
+  final List<String> _children;
+  final int _count;
+  final String _parentId;
   SubmissionRef _submission;
 
   List get children => _children;
 
+  /// The number of comments this instance of [MoreComments] expands into.
+  ///
+  /// If `count` is 0, this instance represents a `continue this thread` link.
   int get count => _count;
 
   int get hashCode => hash2(_count.hashCode, _children.hashCode);
+
+  /// True if this instance of [MoreComments] is the equivalent of the
+  /// 'continue this thread' link in www.reddit.com comments.
+  ///
+  /// When this is true, `count` will be equal to 0.
+  bool get isContinueThisThread => (_count == 0);
+
+  /// True if this instance of [MoreComments] is the equivalent of the
+  /// 'load more comments' link in www.reddit.com comments.
+  ///
+  /// When this is true, `count` should be non-zero.
+  bool get isLoadMoreComments => !isContinueThisThread;
 
   /// The ID of the parent [Comment] or [Submission].
   String get parentId => _parentId;
