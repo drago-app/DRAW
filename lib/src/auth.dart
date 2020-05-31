@@ -141,10 +141,11 @@ abstract class Authenticator {
   /// [path] is the destination URI that the request will be made to.
   Future<dynamic> get(Uri path,
       {Map<String, String> params, bool followRedirects = false}) async {
+    final finalParams = params ?? {};
     params['raw_json']='1';
-    _logger.info('GET: $path params: ${DRAWLoggingUtils.jsonify(params)}');
+    _logger.info('GET: $path params: ${DRAWLoggingUtils.jsonify(finalParams)}');
     return _request(_kGetRequest, path,
-        params: params, followRedirects: followRedirects);
+        params: finalParams, followRedirects: followRedirects);
   }
 
   /// Make a simple `POST` request.
