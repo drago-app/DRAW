@@ -141,13 +141,14 @@ class CommentForest {
     }
   }
 
-  Future<void> _replaceOneMore(MoreComments moreComment) async {
+  Future<List<dynamic>> replaceOneMore(MoreComments moreComment) async {
     final newComments = await moreComment.comments(update: false);
     for (final more in _getMoreComments(newComments, _comments)?.toList()) {
       setSubmissionInternal(more, _submission);
     }
     newComments.forEach(_insertComment);
     _removeMore(moreComment);
+    return newComments;
   }
 
   static final _kNoParent = null;
