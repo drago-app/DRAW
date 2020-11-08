@@ -108,7 +108,7 @@ class CommentForest {
     final skipped = [];
 
     if (specificMoreComments != null) {
-      await _replaceOneMore(specificMoreComments);
+      await replaceOneMore(specificMoreComments);
       return;
     }
 
