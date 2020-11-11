@@ -85,11 +85,14 @@ class MoreComments extends RedditBase with RedditBaseInitializedMixin {
 
   SubmissionRef get submission => _submission;
 
-  MoreComments.parse(Reddit reddit, Map data)
+  MoreComments.parse(Reddit reddit, Map data, {String submissionId})
       : _children = data['children'].cast<String>(),
         _count = data['count'],
         _parentId = data['parent_id'],
         super(reddit) {
+    if (submissionId != null) {
+      _submission = SubmissionRef.withID(reddit, submissionId);
+    }
     setData(this, data);
   }
 
