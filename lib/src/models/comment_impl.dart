@@ -150,8 +150,12 @@ class MoreComments extends RedditBase with RedditBaseInitializedMixin {
   /// Expand [MoreComments] into the list of actual [Comments] it represents.
   ///
   /// Can contain additional [MoreComments] objects.
-  Future<List<dynamic>> comments({bool update = true}) async {
+  Future<List<dynamic>> comments(
+      {bool update = true, CommentSortType sort}) async {
     if (_comments == null) {
+      if (_submission is SubmissionRef) {
+        await _submission.populate();
+      }
       assert(_submission is Submission);
       final Submission initializedSubmission = _submission;
       if (_count == 0) {
@@ -161,7 +165,8 @@ class MoreComments extends RedditBase with RedditBaseInitializedMixin {
       final data = {
         'children': _children.join(','),
         'link_id': initializedSubmission.fullname,
-        'sort': commentSortTypeToString(initializedSubmission.commentSort),
+        'sort':
+            commentSortTypeToString(sort ?? initializedSubmission.commentSort),
         'api_type': 'json',
       };
       _comments = await reddit.post(apiPath['morechildren'], data);
