@@ -154,7 +154,7 @@ class MoreComments extends RedditBase with RedditBaseInitializedMixin {
       {bool update = true, CommentSortType sort}) async {
     if (_comments == null) {
       if (_submission is SubmissionRef) {
-        await _submission.populate();
+        _submission = await _submission.populate();
       }
       assert(_submission is Submission);
       final Submission initializedSubmission = _submission;
